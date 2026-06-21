@@ -5,19 +5,40 @@ class ClassInput extends Component {
     super(props);
 
     this.state = {
-      todos: ['Just some demo tasks', 'As an example'],
+      todos: [
+        {
+          name: 'Just some demo tasks',
+          edit: false,
+        },
+        {
+          name: 'As an example',
+          edit: false,
+        },
+      ],
       inputVal: '',
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleEditInputChange = this.handleEditInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleResubmit = this.handleResubmit.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
+    this.handleEdit = this.handleEdit.bind(this);
   }
 
   handleInputChange(e) {
     this.setState((state) => ({
       ...state,
       inputVal: e.target.value,
+    }));
+  }
+
+  handleEditInputChange(e, index) {
+    this.setState((state) => ({
+      ...state,
+      todos: state.todos.map((t, i) =>
+        i === index ? { ...t, name: e.target.value } : t,
+      ),
     }));
   }
 
@@ -29,17 +50,34 @@ class ClassInput extends Component {
     }));
   }
 
-  handleDelete(e) {
-    e.preventDefault();
+  handleResubmit(e) {
     this.setState((state) => ({
-      todos: state.todos.filter((t) => t !== e.target.className),
+      ...state,
+      todos: state.todos.map((t) =>
+        t.name === e.target.className ? { name: t.name, edit: false } : t,
+      ),
+    }));
+  }
+
+  handleDelete(e) {
+    this.setState((state) => ({
+      todos: state.todos.filter((t) => t.name !== e.target.className),
+      inputVal: '',
+    }));
+  }
+
+  handleEdit(e) {
+    this.setState((state) => ({
+      todos: state.todos.map((t) =>
+        t.name === e.target.className ? { name: t.name, edit: true } : t,
+      ),
       inputVal: '',
     }));
   }
 
   render() {
     const ob = new Count(this.state.todos.length);
-    console.log(ob);
+    console.log(this.state);
     return (
       <section>
         <h3>{this.props.name}</h3>
@@ -58,14 +96,30 @@ class ClassInput extends Component {
         {ob.render()}
         {/* The list of all the To-Do's, displayed */}
         <ul>
-          {this.state.todos.map((todo) => (
-            <li key={todo}>
-              {todo}
-              <button onClick={this.handleDelete} className={todo}>
-                Delete
-              </button>
-            </li>
-          ))}
+          {this.state.todos.map((todo, index) =>
+            todo.edit ? (
+              <>
+                <input
+                  type="text"
+                  value={todo.name}
+                  onChange={(e) => this.handleEditInputChange(e, index)}
+                ></input>
+                <button onClick={this.handleResubmit} className={todo.name}>
+                  Resubmit
+                </button>
+              </>
+            ) : (
+              <li key={todo.name}>
+                {todo.name}
+                <button onClick={this.handleDelete} className={todo.name}>
+                  Delete
+                </button>
+                <button onClick={this.handleEdit} className={todo.name}>
+                  Edit
+                </button>
+              </li>
+            ),
+          )}
         </ul>
       </section>
     );
