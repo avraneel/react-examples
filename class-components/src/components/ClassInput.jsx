@@ -38,6 +38,8 @@ class ClassInput extends Component {
   }
 
   render() {
+    const ob = new Count(this.state.todos.length);
+    console.log(ob);
     return (
       <section>
         <h3>{this.props.name}</h3>
@@ -53,6 +55,7 @@ class ClassInput extends Component {
           <button type="submit">Submit</button>
         </form>
         <h4>All the tasks!</h4>
+        {ob.render()}
         {/* The list of all the To-Do's, displayed */}
         <ul>
           {this.state.todos.map((todo) => (
@@ -70,3 +73,13 @@ class ClassInput extends Component {
 }
 
 export default ClassInput;
+
+class Count extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return <p>Count {this.props}</p>;
+  }
+}
